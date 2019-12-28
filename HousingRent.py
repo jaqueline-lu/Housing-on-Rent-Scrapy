@@ -1,3 +1,4 @@
+import requests
 import numpy as np
 import re
 import geonamescache
@@ -18,10 +19,13 @@ def get_headers():
                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'}
     return headers
 
-def save_to_csv(property,city_name):
+def save_to_csv(property,city_name,PATH):
     housing = pd.DataFrame(columns=['name','beds','baths','type of house','price','rating','num of rating','address','url'],
                  data=property)
-    housing.to_csv('./'+ city_name+'.csv',encoding='utf-8')
+    try:
+        housing.to_csv(PATH + city_name+'.csv',encoding='utf-8')
+    except:
+        print("[ERROR]: PATH is not correct...")
     
     print("Saved to CSV file successfully!")
     
@@ -110,10 +114,10 @@ def isNumber(s) :
     
 def main():
     
-    
+    #get city name from input
     city_name = input('Input the city name or ZIP: ')
     city_name = city_name.replace(" ", "-")
-    
+
     if isNumber(city_name):
         city_url = base_URL + 'zip-' + city_name + base_postfix
     else:
@@ -124,6 +128,7 @@ def main():
             print("[ERROR]: city name error or information not available...")
             return
    
+    #get house number from input
     house_num = input('Input the number of houses information wanted: ')
     try:
         page_num = (int(house_num) // 30) +1
@@ -131,8 +136,11 @@ def main():
         print("[ERROR]: page number not an integer... ")
         return
     
+    #get path from input
+    PATH = input('Input where you want to save the file: (hit Enter for currect directory) ')
+    
     property = Get_house_info(city_url,int(page_num),int(house_num))
-    save_to_csv(property,city_name)
+    save_to_csv(property,city_name,PATH)
 
 if __name__ == '__main__':
     #while true:
