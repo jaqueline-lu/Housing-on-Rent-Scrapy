@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import requests
 import numpy as np
 import re
@@ -22,6 +23,7 @@ def get_headers():
 def save_to_csv(property,city_name,PATH):
     housing = pd.DataFrame(columns=['name','beds','baths','type of house','price','rating','num of rating','address','url'],
                  data=property)
+    print(housing)
     try:
         housing.to_csv(PATH + city_name+'.csv',encoding='utf-8')
     except:
@@ -104,8 +106,6 @@ def Get_house_info(city_url,page_num,house_num):
               
     return properties_list
 
-#def state_name(city_name):
-    
 def isNumber(s) :
     for i in range(len(s)) : 
         if s[i].isdigit() != True : 
@@ -113,7 +113,6 @@ def isNumber(s) :
     return True
     
 def main():
-    
     #get city name from input
     city_name = input('Input the city name or ZIP: ')
     city_name = city_name.replace(" ", "-")
@@ -121,9 +120,10 @@ def main():
     if isNumber(city_name):
         city_url = base_URL + 'zip-' + city_name + base_postfix
     else:
+        state_name = input('Input the state name: ')
+        state_name = state_name.lower().replace(" ","-")
         try:
-            city_url = base_URL + 'california/' + city_name + base_postfix 
-            #print(city_url)
+            city_url = base_URL + state_name + '/' + city_name + base_postfix
         except:
             print("[ERROR]: city name error or information not available...")
             return
